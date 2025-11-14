@@ -718,6 +718,83 @@ body {
   margin-top: 16px;
 }
 
+/* ===== Credentials Display ===== */
+.credentials-display {
+  background: linear-gradient(135deg, #f0f4ff 0%, #f5e6ff 100%);
+  border-left: 4px solid var(--primary);
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 28px;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+}
+
+.credentials-display h3 {
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.credential-field {
+  margin-bottom: 12px;
+}
+
+.credential-field:last-child {
+  margin-bottom: 0;
+}
+
+.credential-field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-light);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.credential-value {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: white;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+.credential-value code {
+  font-family: 'Courier New', monospace;
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 14px;
+  flex: 1;
+  word-break: break-all;
+}
+
+.copy-btn {
+  background: none;
+  border: none;
+  color: var(--primary);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: var(--transition);
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.copy-btn:hover {
+  background: var(--secondary);
+  color: var(--primary-dark);
+  transform: scale(1.1);
+}
+
 .detail-content {
   padding: 24px;
 }

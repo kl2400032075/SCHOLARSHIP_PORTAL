@@ -84,6 +84,22 @@ function goToAdminLogin() {
   }, 300);
 }
 
+// ===== Utility Functions =====
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    showNotification('✓ Copied to clipboard!', 'success');
+  }).catch(() => {
+    // Fallback for older browsers
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+    showNotification('✓ Copied to clipboard!', 'success');
+  });
+}
+
 // ===== Authentication =====
 function openLoginModal() {
   document.getElementById('loginModal').style.display = 'block';
