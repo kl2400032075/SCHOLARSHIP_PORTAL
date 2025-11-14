@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Scholarship Portal - Find Your Perfect Scholarship</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">
+      <i class="fas fa-graduation-cap"></i>
+      <h2>ScholarHub</h2>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="#" onclick="showSection('student')" class="nav-item active">
+        <i class="fas fa-search"></i> Find Scholarships
+      </a>
+      <a href="#" onclick="showSection('student')" class="nav-item">
+        <i class="fas fa-file-alt"></i> My Applications
+      </a>
+      <a href="#" onclick="openLoginModal()" class="nav-item" id="adminNavBtn">
+        <i class="fas fa-lock"></i> Admin Panel
+      </a>
+      <a href="#" onclick="handleLogout()" class="nav-item" id="logoutNavBtn" style="display: none;">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </a>
+      <a href="#" onclick="openHelpModal()" class="nav-item">
+        <i class="fas fa-question-circle"></i> Help & Info
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Login Modal -->
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeLoginModal()">&times;</span>
+      <div class="login-container">
+        <h2>🔐 Admin Login</h2>
+        <form id="loginForm" onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="adminUsername" placeholder="Enter username" required />
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="adminPassword" placeholder="Enter password" required />
+          </div>
+          <button type="submit" class="btn-primary">Login</button>
+        </form>
+        <p id="loginError" class="error"></p>
+        <p class="login-hint">Demo: admin / admin123</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="notification" class="notification"></div>
+
+  <!-- Top Header -->
+  <header class="top-header">
+    <div class="header-left">
+      <button class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <h1>Student Scholarship Portal</h1>
+    </div>
+    <div class="header-right">
+      <div class="user-profile" id="userProfile" style="display: none;">
+        <span id="userName">Admin</span>
+        <button onclick="handleLogout()" class="btn-logout">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Student Section -->
+    <section id="studentSection" class="section active">
+      <div class="section-header">
+        <h2><i class="fas fa-search"></i> Find Scholarships</h2>
+        <p>Discover and apply for scholarships that match your profile</p>
+      </div>
+      
+      <!-- Search & Filters Card -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fas fa-filter"></i> Filter Scholarships</h3>
+        </div>
+        <div class="filters">
+          <input type="text" id="searchBar" placeholder="🔍 Search by name..." onkeyup="filterAndSortScholarships()" />
+          <select id="sortBy" onchange="filterAndSortScholarships()">
+            <option value="name">Sort by Name</option>
+            <option value="deadline">Sort by Deadline</option>
+            <option value="amount">Sort by Amount (High to Low)</option>
+          </select>
+          <input type="number" id="filterAmount" placeholder="💰 Min Amount" onkeyup="filterAndSortScholarships()" />
+          <input type="number" id="filterGPA" placeholder="📊 Min GPA" onkeyup="filterAndSortScholarships()" />
+        </div>
+      </div>
+
+      <!-- Scholarships Grid -->
+      <div class="scholarships-section">
+        <ul id="scholarshipList" class="scholarship-grid"></ul>
+      </div>
+
+      <!-- Application Section -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fas fa-file-alt"></i> Apply for Scholarship</h3>
+          <p>Submit your application and we'll review it shortly</p>
+        </div>
+        <form id="applicationForm" onsubmit="submitApplication(event)" class="application-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" id="studentName" placeholder="Enter your full name" required />
+            </div>
+            <div class="form-group">
+              <label>Email Address</label>
+              <input type="email" id="studentEmail" placeholder="your.email@example.com" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Select Scholarship</label>
+            <select id="scholarshipSelect" required></select>
+          </div>
+          <div class="form-group">
+            <label>Cover Letter / Essay</label>
+            <textarea id="essayText" placeholder="Tell us why you deserve this scholarship..." rows="4"></textarea>
+          </div>
+          <button type="submit" class="btn-primary"><i class="fas fa-paper-plane"></i> Submit Application</button>
+        </form>
+      </div>
+
+      <!-- My Applications -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fas fa-history"></i> My Applications</h3>
+          <button onclick="downloadApplicationsPDF()" class="btn-secondary"><i class="fas fa-download"></i> Download PDF</button>
+        </div>
+        <div id="myApplications" class="applications-list"></div>
+      </div>
+    </section>
+
+    <!-- Admin Section -->
+    <section id="adminSection" class="section">
+      <div class="section-header">
+        <h2><i class="fas fa-chart-line"></i> Admin Dashboard</h2>
+        <p>Manage scholarships and review applications</p>
+      </div>
+
+      <!-- Analytics Cards -->
+      <div class="analytics-grid">
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #667eea;">
+            <i class="fas fa-inbox"></i>
+          </div>
+          <div class="stat-content">
+            <h4>Total Applications</h4>
+            <p id="totalApplications" class="stat-number">0</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #4caf50;">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <div class="stat-content">
+            <h4>Approved</h4>
+            <p id="approvedCount" class="stat-number">0</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #ff9800;">
+            <i class="fas fa-hourglass-half"></i>
+          </div>
+          <div class="stat-content">
+            <h4>Under Review</h4>
+            <p id="reviewCount" class="stat-number">0</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #2196f3;">
+            <i class="fas fa-percentage"></i>
+          </div>
+          <div class="stat-content">
+            <h4>Approval Rate</h4>
+            <p id="approvalRate" class="stat-number">0%</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add New Scholarship Card -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fas fa-plus-circle"></i> Add New Scholarship</h3>
+        </div>
+        <form id="addScholarshipForm" onsubmit="addScholarship(event)" class="form-2col">
+          <div class="form-group">
+            <label>Scholarship Name</label>
+            <input type="text" id="newScholarshipName" placeholder="e.g., Merit Excellence Award" required />
+          </div>
+          <div class="form-group">
+            <label>Amount ($)</label>
+            <input type="number" id="newScholarshipAmount" placeholder="5000" required />
+          </div>
+          <div class="form-group full-width">
+            <label>Description</label>
+            <textarea id="newScholarshipDesc" placeholder="Describe the scholarship..." rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Deadline</label>
+            <input type="date" id="newScholarshipDeadline" required />
+          </div>
+          <div class="form-group">
+            <label>Min GPA</label>
+            <input type="number" id="newScholarshipGPA" placeholder="3.5" step="0.1" />
+          </div>
+          <div class="form-group">
+            <label># of Awards</label>
+            <input type="number" id="newScholarshipAwards" placeholder="5" required />
+          </div>
+          <button type="submit" class="btn-primary full-width"><i class="fas fa-plus"></i> Add Scholarship</button>
+        </form>
+      </div>
+
+      <!-- Manage Scholarships Card -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fas fa-graduation-cap"></i> Manage Scholarships</h3>
+          <button onclick="downloadScholarshipsPDF()" class="btn-secondary"><i class="fas fa-download"></i> Export PDF</button>
+        </div>
+        <ul id="adminScholarshipList" class="admin-scholarship-list"></ul>
+      </div>
+
+      <!-- Review Applications Card -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fas fa-clipboard-check"></i> Review Applications</h3>
+        </div>
+        <div id="applicationsReview" class="applications-review"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Scholarship Detail Modal -->
+  <div id="detailModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeDetailModal()">&times;</span>
+      <div id="scholarshipDetail" class="detail-content"></div>
+    </div>
+  </div>
+
+  <!-- Help & Info Modal -->
+  <div id="helpModal" class="modal">
+    <div class="modal-content help-modal-content">
+      <span class="close" onclick="closeHelpModal()">&times;</span>
+      <div class="help-container">
+        <h2><i class="fas fa-info-circle"></i> Help & Information</h2>
+        
+        <!-- Credentials Section -->
+        <div class="help-section">
+          <h3><i class="fas fa-key"></i> Admin Credentials</h3>
+          <div class="credentials-box">
+            <p><strong>Username:</strong> <code>admin</code></p>
+            <p><strong>Password:</strong> <code>admin123</code></p>
+          </div>
+          <p class="help-text">Use these credentials to access the Admin Panel and manage scholarships and applications.</p>
+        </div>
+
+        <!-- User Guide Section -->
+        <div class="help-section">
+          <h3><i class="fas fa-user"></i> Student View - How to View Your Data</h3>
+          <ol class="help-list">
+            <li><strong>Find Scholarships:</strong> Browse all available scholarships with filters by name, amount, and GPA requirements</li>
+            <li><strong>View Details:</strong> Click "View Details" on any scholarship card to see full information and deadline</li>
+            <li><strong>Apply for Scholarship:</strong> Click "Apply Now" to submit your application with your information</li>
+            <li><strong>My Applications:</strong> View all your submitted applications and their current status</li>
+            <li><strong>Export Data:</strong> Download your applications as PDF for your records</li>
+          </ol>
+        </div>
+
+        <!-- Admin Guide Section -->
+        <div class="help-section">
+          <h3><i class="fas fa-shield-alt"></i> Admin View - How to View & Manage Data</h3>
+          <ol class="help-list">
+            <li><strong>Login to Admin Panel:</strong> Click "Admin Panel" → Enter credentials (admin/admin123)</li>
+            <li><strong>Dashboard:</strong> View analytics:
+              <ul>
+                <li>Total Applications received</li>
+                <li>Approved applications count</li>
+                <li>Applications under review</li>
+                <li>Overall approval rate percentage</li>
+              </ul>
+            </li>
+            <li><strong>Manage Scholarships:</strong> Add new scholarships, edit existing ones, or delete them</li>
+            <li><strong>Review Applications:</strong> View all student applications with filters</li>
+            <li><strong>Update Status:</strong> Change application status (submitted → under review → approved/rejected)</li>
+            <li><strong>Export Data:</strong> Download all scholarships or applications as PDF</li>
+          </ol>
+        </div>
+
+        <!-- Data Storage Section -->
+        <div class="help-section">
+          <h3><i class="fas fa-database"></i> Data Storage</h3>
+          <p class="help-text"><strong>Note:</strong> All data is stored locally in your browser's localStorage. This means:</p>
+          <ul class="help-list">
+            <li>Data persists when you close and reopen the browser</li>
+            <li>Each browser/device has separate data</li>
+            <li>Clearing browser cache will delete all stored data</li>
+            <li>To backup your data, use the Export to PDF feature</li>
+          </ul>
+        </div>
+
+        <!-- Features Section -->
+        <div class="help-section">
+          <h3><i class="fas fa-star"></i> Key Features</h3>
+          <ul class="help-list">
+            <li>✅ Search and filter scholarships</li>
+            <li>✅ Apply for multiple scholarships</li>
+            <li>✅ Track application status in real-time</li>
+            <li>✅ Admin dashboard with analytics</li>
+            <li>✅ PDF export for reports</li>
+            <li>✅ Responsive design (works on mobile, tablet, desktop)</li>
+            <li>✅ Secure admin authentication</li>
+          </ul>
+        </div>
+
+        <div class="help-footer">
+          <p><strong>Need more help?</strong> Contact support or check back for updates.</p>
+          <button class="btn-primary" onclick="closeHelpModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2025 ScholarHub - Student Scholarship Portal. All rights reserved.</p>
+    <p>Helping students find their perfect scholarship opportunity.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
