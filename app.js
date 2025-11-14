@@ -3,6 +3,7 @@ let scholarships = [];
 let applications = [];
 let currentUser = null;
 let isLoggedIn = false;
+let userType = null; // 'student' or 'admin'
 
 const ADMIN_CREDENTIALS = { username: 'admin', password: 'admin123' };
 const STORAGE_KEYS = { scholarships: 'scholarships', applications: 'applications' };
@@ -13,8 +14,8 @@ window.onload = () => {
   if (scholarships.length === 0) {
     initializeSampleData();
   }
-  showSection('student');
-  updateAdminUI();
+  // Show welcome screen on startup
+  showWelcomeScreen();
 };
 
 // ===== Storage Functions =====
@@ -42,6 +43,47 @@ function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('active');
 }
 
+// ===== Welcome Screen Functions =====
+function showWelcomeScreen() {
+  const welcomeScreen = document.getElementById('welcomeScreen');
+  const sidebar = document.getElementById('sidebar');
+  const header = document.querySelector('.top-header');
+  const mainContent = document.querySelector('.main-content');
+  
+  welcomeScreen.style.display = 'flex';
+  sidebar.style.display = 'none';
+  header.style.display = 'none';
+  mainContent.style.display = 'none';
+  userType = null;
+  isLoggedIn = false;
+}
+
+function goToStudentDashboard() {
+  const welcomeScreen = document.getElementById('welcomeScreen');
+  const sidebar = document.getElementById('sidebar');
+  const header = document.querySelector('.top-header');
+  const mainContent = document.querySelector('.main-content');
+  
+  welcomeScreen.style.display = 'none';
+  sidebar.style.display = 'flex';
+  header.style.display = 'flex';
+  mainContent.style.display = 'block';
+  
+  userType = 'student';
+  isLoggedIn = false;
+  currentUser = null;
+  showSection('student');
+  updateAdminUI();
+  showNotification('✓ Welcome to Student Dashboard!', 'success');
+}
+
+function goToAdminLogin() {
+  showWelcomeScreen();
+  setTimeout(() => {
+    openLoginModal();
+  }, 300);
+}
+
 // ===== Authentication =====
 function openLoginModal() {
   document.getElementById('loginModal').style.display = 'block';
@@ -60,7 +102,20 @@ function handleLogin(e) {
   if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
     isLoggedIn = true;
     currentUser = username;
+    userType = 'admin';
     closeLoginModal();
+    
+    // Show dashboard
+    const welcomeScreen = document.getElementById('welcomeScreen');
+    const sidebar = document.getElementById('sidebar');
+    const header = document.querySelector('.top-header');
+    const mainContent = document.querySelector('.main-content');
+    
+    welcomeScreen.style.display = 'none';
+    sidebar.style.display = 'flex';
+    header.style.display = 'flex';
+    mainContent.style.display = 'block';
+    
     showSection('admin');
     updateAdminUI();
     showNotification('✓ Login successful! Welcome to Admin Panel', 'success');
@@ -72,10 +127,11 @@ function handleLogin(e) {
 function handleLogout() {
   isLoggedIn = false;
   currentUser = null;
+  userType = null;
   document.getElementById('adminUsername').value = '';
   document.getElementById('adminPassword').value = '';
   updateAdminUI();
-  showSection('student');
+  showWelcomeScreen();
   showNotification('✓ Logged out successfully', 'info');
 }
 

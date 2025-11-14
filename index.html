@@ -9,8 +9,27 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
+  <!-- Welcome/Splash Screen (shown on startup) -->
+  <div id="welcomeScreen" class="welcome-screen">
+    <div class="welcome-container">
+      <div class="welcome-content">
+        <i class="fas fa-graduation-cap welcome-icon"></i>
+        <h1>ScholarHub</h1>
+        <p>Student Scholarship Portal</p>
+        <div class="welcome-buttons">
+          <button class="btn-primary" onclick="goToStudentDashboard()">
+            <i class="fas fa-user"></i> Student
+          </button>
+          <button class="btn-secondary" onclick="goToAdminLogin()">
+            <i class="fas fa-lock"></i> Admin
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Sidebar Navigation -->
-  <aside class="sidebar" id="sidebar">
+  <aside class="sidebar" id="sidebar" style="display: none;">
     <div class="logo">
       <i class="fas fa-graduation-cap"></i>
       <h2>ScholarHub</h2>
