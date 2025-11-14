@@ -9,27 +9,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
-  <!-- Welcome/Splash Screen (shown on startup) -->
-  <div id="welcomeScreen" class="welcome-screen">
-    <div class="welcome-container">
-      <div class="welcome-content">
-        <i class="fas fa-graduation-cap welcome-icon"></i>
-        <h1>ScholarHub</h1>
-        <p>Student Scholarship Portal</p>
-        <div class="welcome-buttons">
-          <button class="btn-primary" onclick="goToStudentDashboard()">
-            <i class="fas fa-user"></i> Student
-          </button>
-          <button class="btn-secondary" onclick="goToAdminLogin()">
-            <i class="fas fa-lock"></i> Admin
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- Sidebar Navigation -->
-  <aside class="sidebar" id="sidebar" style="display: none;">
+  <aside class="sidebar" id="sidebar">
     <div class="logo">
       <i class="fas fa-graduation-cap"></i>
       <h2>ScholarHub</h2>
@@ -41,63 +22,11 @@
       <a href="#" onclick="showSection('student')" class="nav-item">
         <i class="fas fa-file-alt"></i> My Applications
       </a>
-      <a href="#" onclick="openLoginModal()" class="nav-item" id="adminNavBtn">
-        <i class="fas fa-lock"></i> Admin Panel
-      </a>
-      <a href="#" onclick="handleLogout()" class="nav-item" id="logoutNavBtn" style="display: none;">
-        <i class="fas fa-sign-out-alt"></i> Logout
-      </a>
       <a href="#" onclick="openHelpModal()" class="nav-item">
         <i class="fas fa-question-circle"></i> Help & Info
       </a>
     </nav>
   </aside>
-
-  <!-- Login Modal -->
-  <div id="loginModal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeLoginModal()">&times;</span>
-      <div class="login-container">
-        <h2>🔐 Admin Login</h2>
-        
-        <!-- Credentials Display Box -->
-        <div class="credentials-display">
-          <h3>Demo Credentials</h3>
-          <div class="credential-field">
-            <label>Username:</label>
-            <div class="credential-value">
-              <code>admin</code>
-              <button type="button" class="copy-btn" onclick="copyToClipboard('admin')">
-                <i class="fas fa-copy"></i>
-              </button>
-            </div>
-          </div>
-          <div class="credential-field">
-            <label>Password:</label>
-            <div class="credential-value">
-              <code id="passwordDisplay">admin123</code>
-              <button type="button" class="copy-btn" onclick="copyToClipboard('admin123')">
-                <i class="fas fa-copy"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <form id="loginForm" onsubmit="handleLogin(event)">
-          <div class="form-group">
-            <label>Username</label>
-            <input type="text" id="adminUsername" placeholder="Enter username" required />
-          </div>
-          <div class="form-group">
-            <label>Password</label>
-            <input type="password" id="adminPassword" placeholder="Enter password" required />
-          </div>
-          <button type="submit" class="btn-primary">Login</button>
-        </form>
-        <p id="loginError" class="error"></p>
-      </div>
-    </div>
-  </div>
 
   <!-- Notification Toast -->
   <div id="notification" class="notification"></div>
@@ -107,12 +36,6 @@
     <div class="header-left">
       <button class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
       <h1>Student Scholarship Portal</h1>
-    </div>
-    <div class="header-right">
-      <div class="user-profile" id="userProfile" style="display: none;">
-        <span id="userName">Admin</span>
-        <button onclick="handleLogout()" class="btn-logout">Logout</button>
-      </div>
     </div>
   </header>
 
@@ -183,105 +106,6 @@
           <button onclick="downloadApplicationsPDF()" class="btn-secondary"><i class="fas fa-download"></i> Download PDF</button>
         </div>
         <div id="myApplications" class="applications-list"></div>
-      </div>
-    </section>
-
-    <!-- Admin Section -->
-    <section id="adminSection" class="section">
-      <div class="section-header">
-        <h2><i class="fas fa-chart-line"></i> Admin Dashboard</h2>
-        <p>Manage scholarships and review applications</p>
-      </div>
-
-      <!-- Analytics Cards -->
-      <div class="analytics-grid">
-        <div class="stat-card">
-          <div class="stat-icon" style="background: #667eea;">
-            <i class="fas fa-inbox"></i>
-          </div>
-          <div class="stat-content">
-            <h4>Total Applications</h4>
-            <p id="totalApplications" class="stat-number">0</p>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon" style="background: #4caf50;">
-            <i class="fas fa-check-circle"></i>
-          </div>
-          <div class="stat-content">
-            <h4>Approved</h4>
-            <p id="approvedCount" class="stat-number">0</p>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon" style="background: #ff9800;">
-            <i class="fas fa-hourglass-half"></i>
-          </div>
-          <div class="stat-content">
-            <h4>Under Review</h4>
-            <p id="reviewCount" class="stat-number">0</p>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon" style="background: #2196f3;">
-            <i class="fas fa-percentage"></i>
-          </div>
-          <div class="stat-content">
-            <h4>Approval Rate</h4>
-            <p id="approvalRate" class="stat-number">0%</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Add New Scholarship Card -->
-      <div class="card">
-        <div class="card-header">
-          <h3><i class="fas fa-plus-circle"></i> Add New Scholarship</h3>
-        </div>
-        <form id="addScholarshipForm" onsubmit="addScholarship(event)" class="form-2col">
-          <div class="form-group">
-            <label>Scholarship Name</label>
-            <input type="text" id="newScholarshipName" placeholder="e.g., Merit Excellence Award" required />
-          </div>
-          <div class="form-group">
-            <label>Amount ($)</label>
-            <input type="number" id="newScholarshipAmount" placeholder="5000" required />
-          </div>
-          <div class="form-group full-width">
-            <label>Description</label>
-            <textarea id="newScholarshipDesc" placeholder="Describe the scholarship..." rows="3"></textarea>
-          </div>
-          <div class="form-group">
-            <label>Deadline</label>
-            <input type="date" id="newScholarshipDeadline" required />
-          </div>
-          <div class="form-group">
-            <label>Min GPA</label>
-            <input type="number" id="newScholarshipGPA" placeholder="3.5" step="0.1" />
-          </div>
-          <div class="form-group">
-            <label># of Awards</label>
-            <input type="number" id="newScholarshipAwards" placeholder="5" required />
-          </div>
-          <button type="submit" class="btn-primary full-width"><i class="fas fa-plus"></i> Add Scholarship</button>
-        </form>
-      </div>
-
-      <!-- Manage Scholarships Card -->
-      <div class="card">
-        <div class="card-header">
-          <h3><i class="fas fa-graduation-cap"></i> Manage Scholarships</h3>
-          <button onclick="downloadScholarshipsPDF()" class="btn-secondary"><i class="fas fa-download"></i> Export PDF</button>
-        </div>
-        <ul id="adminScholarshipList" class="admin-scholarship-list"></ul>
-      </div>
-
-      <!-- Review Applications Card -->
-      <div class="card">
-        <div class="card-header">
-          <h3><i class="fas fa-clipboard-check"></i> Review Applications</h3>
-        </div>
-        <div id="applicationsReview" class="applications-review"></div>
       </div>
     </section>
   </main>

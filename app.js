@@ -14,8 +14,8 @@ window.onload = () => {
   if (scholarships.length === 0) {
     initializeSampleData();
   }
-  // Show welcome screen on startup
-  showWelcomeScreen();
+  // Go directly to student dashboard (no welcome screen)
+  goToStudentDashboard();
 };
 
 // ===== Storage Functions =====
