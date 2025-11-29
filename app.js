@@ -45,9 +45,10 @@ function showLoginPage() {
 }
 
 function goToPortal() {
-  document.getElementById('loginPage').style.display = 'none';
-  document.getElementById('portalContent').style.display = 'flex';
-  goToStudentDashboard();
+  showNotification('✓ Welcome! Redirecting to portal...', 'success');
+  setTimeout(() => {
+    window.location.href = 'https://scholarship-portal-puwxvh9yy-gattalabalakrishna-7735s-projects.vercel.app';
+  }, 1000);
 }
 
 function handleStudentLogin(e) {
@@ -58,10 +59,11 @@ function handleStudentLogin(e) {
   if (username === DEMO_CREDENTIALS.username && password === DEMO_CREDENTIALS.password) {
     currentUser = username;
     isLoggedIn = true;
-    document.getElementById('loginPage').style.display = 'none';
-    document.getElementById('portalContent').style.display = 'flex';
-    goToStudentDashboard();
     showNotification('✓ Login successful! Welcome ' + username, 'success');
+    // Redirect to Vercel hosted portal after 1 second
+    setTimeout(() => {
+      window.location.href = 'https://scholarship-portal-puwxvh9yy-gattalabalakrishna-7735s-projects.vercel.app';
+    }, 1000);
   } else {
     document.getElementById('loginError').textContent = '❌ Invalid username or password. Try: demo / demo123';
     document.getElementById('loginPassword').value = '';
