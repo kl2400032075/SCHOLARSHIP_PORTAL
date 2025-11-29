@@ -5,7 +5,7 @@ let currentUser = null;
 let isLoggedIn = false;
 let userType = null; // 'student' or 'admin'
 
-const ADMIN_CREDENTIALS = { username: 'admin', password: 'admin123' };
+const DEMO_CREDENTIALS = { username: 'demo', password: 'demo123' };
 const STORAGE_KEYS = { scholarships: 'scholarships', applications: 'applications' };
 
 // Load data on page init
@@ -14,8 +14,8 @@ window.onload = () => {
   if (scholarships.length === 0) {
     initializeSampleData();
   }
-  // Go directly to student dashboard (no welcome screen)
-  goToStudentDashboard();
+  // Show login page on startup
+  showLoginPage();
 };
 
 // ===== Storage Functions =====
@@ -36,6 +36,36 @@ function initializeSampleData() {
     { id: 3, name: "STEM Excellence", description: "For STEM majors with strong performance", amount: 7500, deadline: "2025-12-01", gpa: 3.7, awards: 5 }
   ];
   saveToStorage();
+}
+
+// ===== Login Page Functions =====
+function showLoginPage() {
+  document.getElementById('loginPage').style.display = 'flex';
+  document.getElementById('portalContent').style.display = 'none';
+}
+
+function goToPortal() {
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('portalContent').style.display = 'flex';
+  goToStudentDashboard();
+}
+
+function handleStudentLogin(e) {
+  e.preventDefault();
+  const username = document.getElementById('loginUsername').value;
+  const password = document.getElementById('loginPassword').value;
+  
+  if (username === DEMO_CREDENTIALS.username && password === DEMO_CREDENTIALS.password) {
+    currentUser = username;
+    isLoggedIn = true;
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('portalContent').style.display = 'flex';
+    goToStudentDashboard();
+    showNotification('✓ Login successful! Welcome ' + username, 'success');
+  } else {
+    document.getElementById('loginError').textContent = '❌ Invalid username or password. Try: demo / demo123';
+    document.getElementById('loginPassword').value = '';
+  }
 }
 
 // ===== UI Control Functions =====
